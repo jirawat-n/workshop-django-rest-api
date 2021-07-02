@@ -3,7 +3,7 @@
 - `cd api_workshop`
 - `python3 -m venv env`
 - `source env/bin/activate`
-- `pip install -r requirements.txt1
+- `pip install -r requirements.txt`
 
 ## Start Develop
 - `python manage.py makemigrations`
