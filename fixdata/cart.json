@@ -1,0 +1,1 @@
+[{"model": "api_workshop.cart", "pk": 1, "fields": {"product": 2, "user": 7, "quantity": 30, "total": 2550.0}}, {"model": "api_workshop.cart", "pk": 2, "fields": {"product": 2, "user": 20, "quantity": 4, "total": 340.0}}]

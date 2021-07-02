@@ -1,0 +1,1 @@
+[{"model": "api_workshop.invoice", "pk": 1, "fields": {"user": 4, "created_datetime": "2021-07-02T09:58:52.510Z", "updated_datetime": "2021-07-02T09:58:52.510Z", "total": 5, "status": "wait"}}]
