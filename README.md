@@ -1,9 +1,9 @@
 # REST-API
 ## Project setup
-cd api_workshop
-python3 -m venv env
-source env/bin/activate
-pip install -r requirements.txt
+- `cd api_workshop`
+- `python3 -m venv env`
+- `source env/bin/activate`
+- `pip install -r requirements.txt1
 
 ## Start Develop
 - `python manage.py makemigrations`
