@@ -75,33 +75,20 @@ class RegisterApi(generics.GenericAPIView):
         else:
             raise NotAcceptable()
 
-    # def create(self, validated_data):
-    #     user = User.objects.create_user(
-    #         username=validated_data['username'],
-    #         password=validated_data['password1'],
-    #         first_name=validated_data['first_name'],
-    #         last_name=validated_data['last_name'])
-    #     user.save()
-    #     return user
-
-
 @api_view(['GET'])
 def api_root(request, format=None):
     return Response({
         'users':
-        reverse('user-list', request=request, format=format),
-        'product':
-        reverse('product-list', request=request, format=format),
-        'category':
-        reverse('category-list', request=request, format=format),
-        'product_image':
-        reverse('product_image-list', request=request, format=format),
-        'cart':
-        reverse('cart-list', request=request, format=format),
-        'invoice':
-        reverse('invoice-list', request=request, format=format),
-        'invoice_item':
-        reverse('invoice_item-list', request=request, format=format),
+        reverse(
+        'user-list', request=request, format=format),
+        'product':reverse('product-list', request=request, format=format),
+        'category':reverse('category-list', request=request, format=format),
+        # 'product_image':reverse('product_image-list', request=request, format=format),
+        'cart':reverse('cart-list', request=request, format=format),
+        'invoice': reverse('invoice-list', request=request, format=format),
+        # 'invoice-detail':reverse('invoice-detail', request=request, format=format),
+        'checkout':reverse('checkout', request=request, format=format
+        ),
     })
 
 
@@ -385,10 +372,105 @@ class InvoiceViewSet(generics.ListCreateAPIView):
             self.response_format["message"] = "List empty"
         return Response(self.response_format)
 
-class Invoice_Item_ViewSet(viewsets.ModelViewSet):
+# class Invoice_Item_ViewSet(generics.ListAPIView):
+#     queryset = invoice_item.objects.all()
+#     serializer_class = Invoice_Item_Serializer
+#     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+#     search_fields = ['id', 'product']
+#     ordering_fields = ['id']
+#     permission_classes = [permissions.IsAuthenticated]
+
+class Invoice_Detail_ViewSet(generics.RetrieveAPIView):
     queryset = invoice_item.objects.all()
-    serializer_class = Invoice_Item_Serializer
+    serializer_class = Invoice_Detail_Serializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id', 'product']
     ordering_fields = ['id']
-    permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        if serializer.data:
+            custom_data = {
+                    "status": "ดึงข้อมูลสำเร็จ",
+                    "data": serializer.data
+            }
+            return Response(custom_data)
+
+class CheckOutViewSet(generics.ListCreateAPIView):
+    queryset = invoice.objects.all()
+    serializer_class = CheckOutSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id', 'product']
+    ordering_fields = ['id']
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        data ={}
+        carts = cart.objects.filter(user=self.request.user) 
+        sum_total=0
+        print(len(carts))
+        if len(carts)!=0:
+            for i in carts:
+            
+                if not i.product.is_enabled:
+                    return Response({
+                "code": "CHECKOUT_FAIL",
+                "msg": "มีสินค้าบางรายการไม่สามารถสั่งซื้อได้",
+                },status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    sum_total += i.total
+            
+            invoices = invoice.objects.create(user=self.request.user,total=sum_total)
+            print(invoices)
+            if invoices:
+                invoices.save()
+                for item in carts:
+                    invoice_items = invoice_item.objects.create(product=item.product,invoice=invoices,quantity=item.quantity,total=item.total)
+                    if invoice_items:
+                        invoice_items.save()
+                        item.delete()
+            else:
+                return Response({
+                "msg":"ไม่มีใบสั่งซื้อสินค้า",
+                "code": "CHECKOUT_FAIL",
+            },status=status.HTTP_400_BAD_REQUEST)
+            data['id']=invoices.id
+            return Response({
+                "msg":"สร้างรายการสั่งซื้อสำเร็จ",
+                "id": data
+            })
+        else:
+            return Response({
+            "code": "CART_EMPTY",
+            "msg": "กรุณาเลือกสินค้าใส่ตะกร้า",
+            },status=status.HTTP_400_BAD_REQUEST)
+
+class void_status(generics.ListCreateAPIView):
+    queryset = invoice.objects.all()
+    serializer_class = InvoiceSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            invoices = invoice.objects.get(id=pk)
+        except:
+            raise NotFound()
+        # data = request.data
+        if invoices.status == "sended":
+            return Response({
+                "code": "VOID_INVOICE_FAIL",
+                "msg": "ยกเลิกรายการไม่สำเร็จเนื่องจากอยู่ในสถานะ ชำระเงินแล้ว"
+            },status=status.HTTP_400_BAD_REQUEST)
+        if invoices.status == "cancle":
+            return Response({
+                "code": "VOIDED",
+                "msg": "รายการสินค้านี้อยู่ในสถานะ 'ยกเลิก' รายการแล้ว"
+            },status=status.HTTP_400_BAD_REQUEST)
+        invoices.status = "cancle"
+        invoices.save()
+        return Response({
+            "msg" : "ยกเลิกรายการสำเร็จ",
+        },status=status.HTTP_200_OK)

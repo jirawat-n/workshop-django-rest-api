@@ -61,13 +61,14 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise ValidationError('รหัสผ่านน้อยกว่า 8 ตัว')
         return password
     
-    # def create(self,validate_data):
-    #     user = User.objects.create_user(
-    #     username= validated_data['username'],     
-    #     password = validated_data['password']  ,
-    #     first_name=validated_data['first_name'],  
-    #     last_name=validated_data['last_name'])
-    #     user.save()
+    def create(self,validated_data):
+        user = User.objects.create_user(
+        username= validated_data['username'],     
+        password = validated_data['password']  ,
+        first_name=validated_data['first_name'],  
+        last_name=validated_data['last_name'])
+        user.save()
+        return user
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -131,10 +132,22 @@ class CartSerializer(serializers.HyperlinkedModelSerializer):
 class InvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = invoice
-        fields = '__all__'
+        fields = ['url','id','created_datetime','status','total']
 
-
-class Invoice_Item_Serializer(serializers.HyperlinkedModelSerializer):
+class Invoice_Item_Serializer(serializers.ModelSerializer):
     class Meta:
         model = invoice_item
-        fields = '__all__'
+        fields = ['id','product','invoice','created_datetime','quantity','total']
+
+class Invoice_Detail_Serializer(serializers.ModelSerializer):
+    invoice_itemed = Invoice_Item_Serializer(many=True,read_only=True)
+    class Meta:
+        model = invoice
+        fields = ['id','created_datetime','status','total','invoice_itemed']
+
+class CheckOutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = invoice
+        fields = ['id']
+
+

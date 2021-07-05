@@ -73,13 +73,13 @@ product_image_detail = Product_Image_ViewSet.as_view({
 # })
 
 
-router = DefaultRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'product', views.ProductViewSet)
-router.register(r'product_image', views.Product_Image_ViewSet)
-router.register(r'cart', views.CartViewSet)
-router.register(r'invoice', views.InvoiceViewSet)
-router.register(r'invoice_item', views.Invoice_Item_ViewSet)
+# router = DefaultRouter()
+# router.register(r'users', views.UserViewSet)
+# router.register(r'product', views.ProductViewSet)
+# router.register(r'product_image', views.Product_Image_ViewSet)
+# router.register(r'cart', views.CartViewSet)
+# router.register(r'invoice', views.InvoiceViewSet)
+# router.register(r'invoice_item', views.Invoice_Item_ViewSet)
 
 urlpatterns = format_suffix_patterns([
     path('admin/', admin.site.urls),
@@ -104,9 +104,13 @@ urlpatterns = format_suffix_patterns([
 
     path('cart/', CartViewSet.as_view(), name='cart-list'),
     path('cart/<int:pk>/', EditCartQuanlity.as_view(), name='cart-edit'),
-    
-    path('invoice_item/', InvoiceViewSet.as_view(), name='invoice_item-list'),
-    path('invoice_item/<int:pk>/', InvoiceViewSet.as_view(),name='invoice_item-detail'),
+
+    path('checkout/',CheckOutViewSet.as_view(),name ='checkout'),
+
+    path('invoice/', InvoiceViewSet.as_view(), name='invoice-list'),
+    path('invoice/<int:pk>/', Invoice_Detail_ViewSet.as_view(),name='invoice-detail'),
+
+    path('invoice/<int:pk>/void/', void_status.as_view(),name='invoice-void-detail'),
 
     path('users/', user_list, name='user-list'),
     path('users/<int:pk>', user_detail, name='user-detail'),

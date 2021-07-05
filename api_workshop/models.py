@@ -16,7 +16,6 @@ class category(models.Model):
 
 
 class Product(models.Model):
-    
     category = models.ForeignKey(category, null=True, blank=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=250)
     price = models.DecimalField(max_digits=20,decimal_places=2,default=0)
@@ -53,12 +52,12 @@ class invoice(models.Model):
         ('sended', 'sended'),
         ('cancle', 'cancle'),
     )
-    status = models.CharField(max_length=40, null=True,blank=False, choices=status_choice)
+    status = models.CharField(max_length=40, null=True,blank=False,default='wait',choices=status_choice)
 
 
 class invoice_item(models.Model):
-    product = models.ForeignKey(Product, null=True, blank=True, on_delete=models.CASCADE)
-    invoice = models.ForeignKey(invoice, null=True, blank=True, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, related_name='invoice_prod',null=True, blank=True, on_delete=models.CASCADE)
+    invoice = models.ForeignKey(invoice, related_name='invoice_itemed',null=True, blank=True, on_delete=models.CASCADE)
     created_datetime = models.DateTimeField(auto_now_add=True)
     quantity = models.IntegerField(default=0)
     total = models.IntegerField(default=0)
