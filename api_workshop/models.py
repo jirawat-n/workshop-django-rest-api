@@ -56,8 +56,8 @@ class invoice(models.Model):
 
 
 class invoice_item(models.Model):
-    product = models.ForeignKey(Product, related_name='invoice_prod',null=True, blank=True, on_delete=models.CASCADE)
-    invoice = models.ForeignKey(invoice, related_name='invoice_itemed',null=True, blank=True, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product,null=True, blank=True, on_delete=models.CASCADE)
+    invoice = models.ForeignKey(invoice, related_name='invoice_item',null=True, blank=True, on_delete=models.CASCADE)
     created_datetime = models.DateTimeField(auto_now_add=True)
     quantity = models.IntegerField(default=0)
     total = models.IntegerField(default=0)

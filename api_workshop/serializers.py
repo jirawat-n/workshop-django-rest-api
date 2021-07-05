@@ -55,6 +55,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         }
 
     def validate_password(self, password):
+        print('น้อยกว่า 8 ตัว')
         if password is None:
             raise ValidationError('กรุณาใส่รหัสผ่าน')
         if len(password) < 8:
@@ -132,18 +133,19 @@ class CartSerializer(serializers.HyperlinkedModelSerializer):
 class InvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = invoice
-        fields = ['url','id','created_datetime','status','total']
+        fields = ['url','id','created_datetime','updated_datetime','status','total']
 
 class Invoice_Item_Serializer(serializers.ModelSerializer):
     class Meta:
         model = invoice_item
         fields = ['id','product','invoice','created_datetime','quantity','total']
 
+
 class Invoice_Detail_Serializer(serializers.ModelSerializer):
-    invoice_itemed = Invoice_Item_Serializer(many=True,read_only=True)
+    invoice_item = Invoice_Item_Serializer(many=True,read_only=True)
     class Meta:
         model = invoice
-        fields = ['id','created_datetime','status','total','invoice_itemed']
+        fields = ['id','created_datetime','updated_datetime','status','total','invoice_item']
 
 class CheckOutSerializer(serializers.ModelSerializer):
     class Meta:

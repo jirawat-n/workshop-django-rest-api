@@ -59,8 +59,7 @@ class RegisterApi(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            token, created = Token.objects.get_or_create(
-                user=serializer.instance)
+            token, created = Token.objects.get_or_create(user=serializer.instance)
             refresh = RefreshToken.for_user(user)
             return Response(
                 {
@@ -73,7 +72,7 @@ class RegisterApi(generics.GenericAPIView):
                 },
                 status=status.HTTP_201_CREATED)
         else:
-            raise NotAcceptable()
+            return Response(serializer.errors)
 
 @api_view(['GET'])
 def api_root(request, format=None):
@@ -372,16 +371,27 @@ class InvoiceViewSet(generics.ListCreateAPIView):
             self.response_format["message"] = "List empty"
         return Response(self.response_format)
 
-# class Invoice_Item_ViewSet(generics.ListAPIView):
+
+# class Invoice_Detail_ViewSet(generics.RetrieveAPIView):
 #     queryset = invoice_item.objects.all()
 #     serializer_class = Invoice_Item_Serializer
 #     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
 #     search_fields = ['id', 'product']
 #     ordering_fields = ['id']
 #     permission_classes = [permissions.IsAuthenticated]
+    
+#     def retrieve(self, request, *args, **kwargs):
+#         instance = self.get_object()
+#         serializer = self.get_serializer(instance)
+#         if serializer.data:
+#             custom_data = {
+#                     "status": "ดึงข้อมูลสำเร็จ",
+#                     "data": serializer.data
+#             }
+#             return Response(custom_data)
 
 class Invoice_Detail_ViewSet(generics.RetrieveAPIView):
-    queryset = invoice_item.objects.all()
+    queryset = invoice.objects.all()
     serializer_class = Invoice_Detail_Serializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id', 'product']
