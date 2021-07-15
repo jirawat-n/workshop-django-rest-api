@@ -1,1 +1,42 @@
-[{"model": "api_workshop.category", "pk": 1, "fields": {"name": "\u0e1b\u0e25\u0e32", "image": "images/category/Quartz_3840x2160_zKkEE9c.png", "is_enabled": true, "detail": "\u0e1b\u0e25\u0e32"}}, {"model": "api_workshop.category", "pk": 2, "fields": {"name": "\u0e2b\u0e21\u0e39", "image": "images/category/Quartz_3840x2160_p16MPpw.png", "is_enabled": true, "detail": "\u0e2b\u0e21\u0e39"}}, {"model": "api_workshop.category", "pk": 3, "fields": {"name": "\u0e01\u0e38\u0e49\u0e07", "image": "images/category/Quartz_3840x2160_JpsqbU1.png", "is_enabled": true, "detail": "\u0e01\u0e38\u0e49\u0e07"}}, {"model": "api_workshop.category", "pk": 4, "fields": {"name": "\u0e44\u0e01\u0e48", "image": "images/category/Quartz_3840x2160_PcwdcmL.png", "is_enabled": true, "detail": "\u0e44\u0e01\u0e48"}}]
+[
+    {
+        "model": "api_workshop.category",
+        "pk": 1,
+        "fields": {
+            "name": "\u0e1b\u0e25\u0e32",
+            "image": "images/category/Quartz_3840x2160_zKkEE9c.png",
+            "is_enabled": true,
+            "detail": "\u0e1b\u0e25\u0e32"
+        }
+    },
+    {
+        "model": "api_workshop.category",
+        "pk": 2,
+        "fields": {
+            "name": "\u0e2b\u0e21\u0e39",
+            "image": "images/category/Quartz_3840x2160_p16MPpw.png",
+            "is_enabled": true,
+            "detail": "\u0e2b\u0e21\u0e39"
+        }
+    },
+    {
+        "model": "api_workshop.category",
+        "pk": 3,
+        "fields": {
+            "name": "\u0e01\u0e38\u0e49\u0e07",
+            "image": "images/category/Quartz_3840x2160_JpsqbU1.png",
+            "is_enabled": true,
+            "detail": "\u0e01\u0e38\u0e49\u0e07"
+        }
+    },
+    {
+        "model": "api_workshop.category",
+        "pk": 4,
+        "fields": {
+            "name": "\u0e44\u0e01\u0e48",
+            "image": "images/category/Quartz_3840x2160_PcwdcmL.png",
+            "is_enabled": true,
+            "detail": "\u0e44\u0e01\u0e48"
+        }
+    }
+]

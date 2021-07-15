@@ -7,7 +7,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.exceptions import ValidationError
 from rest_framework import status
-from rest_framework.exceptions import NotFound, NotAuthenticated, AuthenticationFailed
+from rest_framework.exceptions import NotFound, NotAuthenticated, AuthenticationFailed, ParseError
 from versatileimagefield.serializers import VersatileImageFieldSerializer
 
 
@@ -18,12 +18,11 @@ class TokenObtainPairSerializer(TokenObtainPairSerializer):
             refresh = self.get_token(self.user)
             data['refresh'] = str(refresh)
             data['access'] = str(refresh.access_token)
-            data['expire_id'] = int(
-                refresh.access_token.lifetime.total_seconds())
+            data['expire_id'] = int(refresh.access_token.lifetime.total_seconds())
             data['token_type'] = str(refresh.token_type)
             return data
         except:
-            raise AuthenticationFailed()
+            raise ParseError({'msg': 'Login Fail'})
         return super().validate(attrs)
 
 
@@ -38,12 +37,13 @@ class TokenRefreshSerializer(TokenRefreshSerializer):
             data['refresh_token'] = str(refresh)
             return data
         except:
-            raise AuthenticationFailed()
+            raise ParseError({'msg': 'Login Fail'})
 
 
 class RegisterSerializer(serializers.ModelSerializer):
     # username = serializers.CharField(max_length=10, error_messages={"blank": "ชื่อผู้ใช้เป็นค่าว่าง กรุณากรอกชื่อผู้ใช้งาน"})
-    password = serializers.CharField(max_length=10, error_messages={"blank": "รหัสผ่านเป็นค่าว่าง กรุณากรอกรหัสผ่าน"})
+    password = serializers.CharField(max_length=10, error_messages={
+                                     "blank": "รหัสผ่านเป็นค่าว่าง กรุณากรอกรหัสผ่าน"})
 
     class Meta:
         model = User
@@ -55,19 +55,18 @@ class RegisterSerializer(serializers.ModelSerializer):
         }
 
     def validate_password(self, password):
-        print('น้อยกว่า 8 ตัว')
         if password is None:
             raise ValidationError('กรุณาใส่รหัสผ่าน')
         if len(password) < 8:
             raise ValidationError('รหัสผ่านน้อยกว่า 8 ตัว')
         return password
-    
-    def create(self,validated_data):
+
+    def create(self, validated_data):
         user = User.objects.create_user(
-        username= validated_data['username'],     
-        password = validated_data['password']  ,
-        first_name=validated_data['first_name'],  
-        last_name=validated_data['last_name'])
+            username=validated_data['username'],
+            password=validated_data['password'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'])
         user.save()
         return user
 
@@ -81,7 +80,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = category
-        fields = '__all__'
+        fields = ['id', 'image', 'name', 'is_enabled', 'detail']
 
 
 class Product_Image_Serializer(serializers.HyperlinkedModelSerializer):
@@ -96,7 +95,8 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['category', 'name', 'price', 'image', 'is_enabled', 'image_product']
+        fields = ['id', 'category', 'name', 'price',
+                  'image', 'is_enabled', 'image_product']
 
 
 class CartSerializer(serializers.HyperlinkedModelSerializer):
@@ -133,23 +133,27 @@ class CartSerializer(serializers.HyperlinkedModelSerializer):
 class InvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = invoice
-        fields = ['url','id','created_datetime','updated_datetime','status','total']
+        fields = ['url', 'id', 'created_datetime',
+                  'updated_datetime', 'status', 'total']
+
 
 class Invoice_Item_Serializer(serializers.ModelSerializer):
     class Meta:
         model = invoice_item
-        fields = ['id','product','invoice','created_datetime','quantity','total']
+        fields = ['id', 'product', 'invoice',
+                  'created_datetime', 'quantity', 'total']
 
 
 class Invoice_Detail_Serializer(serializers.ModelSerializer):
-    invoice_item = Invoice_Item_Serializer(many=True,read_only=True)
+    invoice_item = Invoice_Item_Serializer(many=True, read_only=True)
+
     class Meta:
         model = invoice
-        fields = ['id','created_datetime','updated_datetime','status','total','invoice_item']
+        fields = ['id', 'created_datetime', 'updated_datetime',
+                  'status', 'total', 'invoice_item']
+
 
 class CheckOutSerializer(serializers.ModelSerializer):
     class Meta:
         model = invoice
         fields = ['id']
-
-

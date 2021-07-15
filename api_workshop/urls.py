@@ -93,8 +93,8 @@ urlpatterns = format_suffix_patterns([
     path('product/', ProductViewSet.as_view(), name='product-list'),
     path('product/<int:pk>/', ProductViewSetDetail.as_view(), name='product-detail'),
 
-    path('categoty/', category_list, name='category-list'),
-    path('categoty/<int:pk>/', category_detail, name='category-detail'),
+    path('category/', category_list, name='category-list'),
+    path('category/<int:pk>/', category_detail, name='category-detail'),
 
     path('product_image/', product_image_list, name='product_image-list'),
     path('product_image/<int:pk>/', product_image_detail,name='product_image-detail'),

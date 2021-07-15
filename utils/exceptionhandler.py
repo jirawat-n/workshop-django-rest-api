@@ -74,7 +74,7 @@ def NotAuthenticated(exc, context, response):
 def ParseError(exc, context, response):
     response.data = ({
         "code": "HTTP_404_NOT_FOUND",
-        'msg': 'ไม่พบข้อมูล',
+        'msg': 'ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง',
     })
     return response
 

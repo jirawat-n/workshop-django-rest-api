@@ -34,8 +34,9 @@ from rest_framework import pagination
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
 from .paginator import CustomPagination
-from rest_framework.exceptions import NotFound, ParseError, AuthenticationFailed,NotAcceptable
+from rest_framework.exceptions import NotFound, ParseError, AuthenticationFailed, NotAcceptable
 # Create your views here.
+
 
 class RegisterView_2(APIView):
     def post(self, request):
@@ -55,11 +56,13 @@ class RefrestView(TokenObtainPairView):
 
 class RegisterApi(generics.GenericAPIView):
     serializer_class = RegisterSerializer
+
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            token, created = Token.objects.get_or_create(user=serializer.instance)
+            token, created = Token.objects.get_or_create(
+                user=serializer.instance)
             refresh = RefreshToken.for_user(user)
             return Response(
                 {
@@ -74,20 +77,21 @@ class RegisterApi(generics.GenericAPIView):
         else:
             return Response(serializer.errors)
 
+
 @api_view(['GET'])
 def api_root(request, format=None):
     return Response({
         'users':
         reverse(
-        'user-list', request=request, format=format),
-        'product':reverse('product-list', request=request, format=format),
-        'category':reverse('category-list', request=request, format=format),
+            'user-list', request=request, format=format),
+        'product': reverse('product-list', request=request, format=format),
+        'category': reverse('category-list', request=request, format=format),
         # 'product_image':reverse('product_image-list', request=request, format=format),
-        'cart':reverse('cart-list', request=request, format=format),
+        'cart': reverse('cart-list', request=request, format=format),
         'invoice': reverse('invoice-list', request=request, format=format),
         # 'invoice-detail':reverse('invoice-detail', request=request, format=format),
-        'checkout':reverse('checkout', request=request, format=format
-        ),
+        'checkout': reverse('checkout', request=request, format=format
+                            ),
     })
 
 
@@ -129,32 +133,32 @@ class ProductViewSet(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = Product.objects.all()
-        sorts_by = self.request.query_params.get('sort', 'desc')
+        sorts_by = self.request.query_params.get('sort', 'asc')
         category_in = self.request.query_params.get('category_in', None)
         category_not_in = self.request.query_params.get(
             'category_not_in', None)
 
-        list_params_in = []
-        list_params_not_in = []
+        categories_id = []
+        categories_not_in = []
 
         if category_in:
             for i in category_in.split(","):
-                list_params_in.append(int(i))
+                categories_id.append(int(i))
 
         if category_not_in:
             for i in category_not_in.split(","):
-                list_params_not_in.append(int(i))
+                categories_not_in.append(int(i))
 
-        if sorts_by == 'desc':
+        if sorts_by == 'asc':
             queryset = queryset.order_by('price')
 
         else:
             queryset = queryset.order_by('-price')
 
         if category_in:
-            queryset = queryset.filter(category__in=list_params_in)
+            queryset = queryset.filter(category__in=categories_id)
         if category_not_in:
-            queryset = queryset.exclude(category__in=list_params_not_in)
+            queryset = queryset.exclude(category__in=categories_not_in)
 
         return queryset
 
@@ -168,8 +172,7 @@ class ProductViewSetDetail(generics.RetrieveUpdateDestroyAPIView):
         super(ProductViewSetDetail, self).__init__(**kwargs)
 
     def retrieve(self, request, *args, **kwargs):
-        response_data = super(ProductViewSetDetail,
-                              self).retrieve(request, *args, **kwargs)
+        response_data = super(ProductViewSetDetail,self).retrieve(request, *args, **kwargs)
         self.response_format["data"] = response_data.data
         return Response(self.response_format)
 
@@ -223,7 +226,7 @@ class CartViewSet(generics.ListCreateAPIView):
     ]
     filterset_fields = ['product']
     ordering_fields = ['quantity', 'total']
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -305,10 +308,14 @@ class EditCartQuanlity(generics.RetrieveUpdateDestroyAPIView):
             Cart.total = float(data['quantity']) * float((Cart.product.price))
             Cart.quantity = data['quantity']
             Cart.save()
-            if Cart.quantity == 0:
+            if int(Cart.quantity) == 0:
                 Cart.delete()
                 return Response({
                     'msg': 'ลบสำเร็จ'
+                })
+            if int(Cart.quantity) < 0:
+                return Response({
+                    'msg': 'กรุณากรอกจำนวนเต็ม'
                 })
             data = {}
             data['id'] = Cart.id
@@ -365,7 +372,8 @@ class InvoiceViewSet(generics.ListCreateAPIView):
         super(InvoiceViewSet, self).__init__(**kwargs)
 
     def list(self, request, *args, **kwargs):
-        response_data = super(InvoiceViewSet, self).list(request, *args, **kwargs)
+        response_data = super(InvoiceViewSet, self).list(
+            request, *args, **kwargs)
         self.response_format["data"] = response_data.data
         if not response_data.data:
             self.response_format["message"] = "List empty"
@@ -379,7 +387,7 @@ class InvoiceViewSet(generics.ListCreateAPIView):
 #     search_fields = ['id', 'product']
 #     ordering_fields = ['id']
 #     permission_classes = [permissions.IsAuthenticated]
-    
+
 #     def retrieve(self, request, *args, **kwargs):
 #         instance = self.get_object()
 #         serializer = self.get_serializer(instance)
@@ -397,16 +405,17 @@ class Invoice_Detail_ViewSet(generics.RetrieveAPIView):
     search_fields = ['id', 'product']
     ordering_fields = ['id']
     permission_classes = [permissions.IsAuthenticated]
-    
+
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         if serializer.data:
             custom_data = {
-                    "status": "ดึงข้อมูลสำเร็จ",
-                    "data": serializer.data
+                "status": "ดึงข้อมูลสำเร็จ",
+                "data": serializer.data
             }
             return Response(custom_data)
+
 
 class CheckOutViewSet(generics.ListCreateAPIView):
     queryset = invoice.objects.all()
@@ -418,45 +427,48 @@ class CheckOutViewSet(generics.ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        data ={}
-        carts = cart.objects.filter(user=self.request.user) 
-        sum_total=0
+        data = {}
+        carts = cart.objects.filter(user=self.request.user)
+        sum_total = 0
         print(len(carts))
-        if len(carts)!=0:
+        if len(carts) != 0:
             for i in carts:
-            
+
                 if not i.product.is_enabled:
                     return Response({
-                "code": "CHECKOUT_FAIL",
-                "msg": "มีสินค้าบางรายการไม่สามารถสั่งซื้อได้",
-                },status=status.HTTP_400_BAD_REQUEST)
+                        "code": "CHECKOUT_FAIL",
+                        "msg": "มีสินค้าบางรายการไม่สามารถสั่งซื้อได้",
+                    }, status=status.HTTP_400_BAD_REQUEST)
                 else:
                     sum_total += i.total
-            
-            invoices = invoice.objects.create(user=self.request.user,total=sum_total)
+
+            invoices = invoice.objects.create(
+                user=self.request.user, total=sum_total)
             print(invoices)
             if invoices:
                 invoices.save()
                 for item in carts:
-                    invoice_items = invoice_item.objects.create(product=item.product,invoice=invoices,quantity=item.quantity,total=item.total)
+                    invoice_items = invoice_item.objects.create(
+                        product=item.product, invoice=invoices, quantity=item.quantity, total=item.total)
                     if invoice_items:
                         invoice_items.save()
                         item.delete()
             else:
                 return Response({
-                "msg":"ไม่มีใบสั่งซื้อสินค้า",
-                "code": "CHECKOUT_FAIL",
-            },status=status.HTTP_400_BAD_REQUEST)
-            data['id']=invoices.id
+                    "msg": "ไม่มีใบสั่งซื้อสินค้า",
+                    "code": "CHECKOUT_FAIL",
+                }, status=status.HTTP_400_BAD_REQUEST)
+            data['id'] = invoices.id
             return Response({
-                "msg":"สร้างรายการสั่งซื้อสำเร็จ",
+                "msg": "สร้างรายการสั่งซื้อสำเร็จ",
                 "id": data
             })
         else:
             return Response({
-            "code": "CART_EMPTY",
-            "msg": "กรุณาเลือกสินค้าใส่ตะกร้า",
-            },status=status.HTTP_400_BAD_REQUEST)
+                "code": "CART_EMPTY",
+                "msg": "กรุณาเลือกสินค้าใส่ตะกร้า",
+            }, status=status.HTTP_400_BAD_REQUEST)
+
 
 class void_status(generics.ListCreateAPIView):
     queryset = invoice.objects.all()
@@ -473,14 +485,14 @@ class void_status(generics.ListCreateAPIView):
             return Response({
                 "code": "VOID_INVOICE_FAIL",
                 "msg": "ยกเลิกรายการไม่สำเร็จเนื่องจากอยู่ในสถานะ ชำระเงินแล้ว"
-            },status=status.HTTP_400_BAD_REQUEST)
+            }, status=status.HTTP_400_BAD_REQUEST)
         if invoices.status == "cancle":
             return Response({
                 "code": "VOIDED",
                 "msg": "รายการสินค้านี้อยู่ในสถานะ 'ยกเลิก' รายการแล้ว"
-            },status=status.HTTP_400_BAD_REQUEST)
+            }, status=status.HTTP_400_BAD_REQUEST)
         invoices.status = "cancle"
         invoices.save()
         return Response({
-            "msg" : "ยกเลิกรายการสำเร็จ",
-        },status=status.HTTP_200_OK)
+            "msg": "ยกเลิกรายการสำเร็จ",
+        }, status=status.HTTP_200_OK)
