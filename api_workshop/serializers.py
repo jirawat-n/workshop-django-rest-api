@@ -136,15 +136,15 @@ class CartSerializer(serializers.HyperlinkedModelSerializer):
         return quantity
 
 
-class CartSerializer(serializers.ModelSerializer):
-    foo = serializers.SerializerMethodField()
+# class CartSerializer(serializers.ModelSerializer):
+#     foo = serializers.SerializerMethodField()
 
-    class Meta:
-        model = cart
-        fields = ['id', 'quantity', 'foo',  'total', 'product']
+#     class Meta:
+#         model = cart
+#         fields = ['id', 'quantity', 'foo',  'total', 'product']
 
-    def get_foo(self, obj):
-        return "Foo id: %i" % obj.product.price
+#     def get_foo(self, obj):
+#         return "Foo id: %i" % obj.product.price
 
 
 class InvoiceSerializer(serializers.ModelSerializer):
