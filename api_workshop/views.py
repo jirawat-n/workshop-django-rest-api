@@ -172,7 +172,8 @@ class ProductViewSetDetail(generics.RetrieveUpdateDestroyAPIView):
         super(ProductViewSetDetail, self).__init__(**kwargs)
 
     def retrieve(self, request, *args, **kwargs):
-        response_data = super(ProductViewSetDetail,self).retrieve(request, *args, **kwargs)
+        response_data = super(ProductViewSetDetail, self).retrieve(
+            request, *args, **kwargs)
         self.response_format["data"] = response_data.data
         return Response(self.response_format)
 
@@ -239,6 +240,7 @@ class CartViewSet(generics.ListCreateAPIView):
             item = cart.objects.filter(user=user, product=products.id).first()
             if item:
                 item.quantity += quantities
+                # print(item.quantity)
                 mul = quantities * products.price
                 item.total += float(mul)
                 item.save()
@@ -247,6 +249,8 @@ class CartViewSet(generics.ListCreateAPIView):
                     'id': item.id,
                     'product': products.id,
                     'price': item.total,
+                    'quantities': item.quantity,
+                    # 'quantity': item.quantity,
                 }
                 newdict.update(serializer.data)
                 return Response({
@@ -267,6 +271,7 @@ class CartViewSet(generics.ListCreateAPIView):
                     'id': new_item.id,
                     'product': new_item.id,
                     'price': new_item.total,
+                    # 'quantities': item.quantity,
                 }
                 newdict.update(serializer.data)
                 return Response({

@@ -7,6 +7,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.exceptions import ValidationError
 from rest_framework import status
+import json
 from rest_framework.exceptions import NotFound, NotAuthenticated, AuthenticationFailed, ParseError
 from versatileimagefield.serializers import VersatileImageFieldSerializer
 
@@ -16,9 +17,14 @@ class TokenObtainPairSerializer(TokenObtainPairSerializer):
         try:
             data = super().validate(attrs)
             refresh = self.get_token(self.user)
+            user_none_json = {self.user}
+            # tmpObj = json.loads(self.user)
+            print(user_none_json)
+            data['user'] = str(user_none_json)
             data['refresh'] = str(refresh)
             data['access'] = str(refresh.access_token)
-            data['expire_id'] = int(refresh.access_token.lifetime.total_seconds())
+            data['expire_id'] = int(
+                refresh.access_token.lifetime.total_seconds())
             data['token_type'] = str(refresh.token_type)
             return data
         except:
@@ -128,6 +134,17 @@ class CartSerializer(serializers.HyperlinkedModelSerializer):
         if quantity < 1:
             raise ValidationError('จำนวนสินค้านี้ต้องมากกว่า 0')
         return quantity
+
+
+class CartSerializer(serializers.ModelSerializer):
+    foo = serializers.SerializerMethodField()
+
+    class Meta:
+        model = cart
+        fields = ['id', 'quantity', 'foo',  'total', 'product']
+
+    def get_foo(self, obj):
+        return "Foo id: %i" % obj.product.price
 
 
 class InvoiceSerializer(serializers.ModelSerializer):
