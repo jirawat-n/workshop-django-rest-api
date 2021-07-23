@@ -65,8 +65,6 @@ class invoice(models.Model):
     )
     status = models.CharField(max_length=40, null=True,
                               blank=False, default='wait', choices=status_choice)
-    def __str__(self):
-        return self.user.username
 
 
 class invoice_item(models.Model):
