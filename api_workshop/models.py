@@ -17,16 +17,19 @@ class category(models.Model):
 
 
 class Product(models.Model):
-    category = models.ForeignKey(category, null=True, blank=True, on_delete=models.CASCADE)
+    category = models.ForeignKey(
+        category, null=True, blank=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=250)
     price = models.DecimalField(max_digits=20, decimal_places=2, default=0)
     image = VersatileImageField(
         'image', upload_to='images/product', ppoi_field='image_ppoi')
     is_enabled = models.BooleanField(default=True)
+    recommend = models.BooleanField(default=True)
     image_ppoi = PPOIField()
 
     def __str__(self):
         return self.name
+
 
 class product_image(models.Model):
     product = models.ForeignKey(
@@ -39,8 +42,7 @@ class product_image(models.Model):
 
 class cart(models.Model):
     product = models.ForeignKey(Product, null=True, blank=True, on_delete=models.CASCADE)
-    user = models.ForeignKey(
-        User, null=True, blank=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
     total = models.FloatField(default=0)
 
@@ -52,8 +54,7 @@ class cart(models.Model):
 
 
 class invoice(models.Model):
-    user = models.ForeignKey(
-        User, null=True, blank=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     created_datetime = models.DateTimeField(auto_now_add=True)
     updated_datetime = models.DateTimeField(auto_now=True)
     total = models.IntegerField(default=0)
@@ -64,13 +65,16 @@ class invoice(models.Model):
     )
     status = models.CharField(max_length=40, null=True,
                               blank=False, default='wait', choices=status_choice)
+    def __str__(self):
+        return self.user.username
 
 
 class invoice_item(models.Model):
-    product = models.ForeignKey(
-        Product, null=True, blank=True, on_delete=models.CASCADE)
-    invoice = models.ForeignKey(
-        invoice, related_name='invoice_item', null=True, blank=True, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, null=True, blank=True, on_delete=models.CASCADE)
+    invoice = models.ForeignKey(invoice, related_name='invoice_item', null=True, blank=True, on_delete=models.CASCADE)
     created_datetime = models.DateTimeField(auto_now_add=True)
     quantity = models.IntegerField(default=0)
     total = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.product.name

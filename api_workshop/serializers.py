@@ -17,10 +17,7 @@ class TokenObtainPairSerializer(TokenObtainPairSerializer):
         try:
             data = super().validate(attrs)
             refresh = self.get_token(self.user)
-            user_none_json = {self.user}
-            # tmpObj = json.loads(self.user)
-            print(user_none_json)
-            data['user'] = str(user_none_json)
+            data['user'] = str(self.user)
             data['refresh'] = str(refresh)
             data['access'] = str(refresh.access_token)
             data['expire_id'] = int(
@@ -49,7 +46,7 @@ class TokenRefreshSerializer(TokenRefreshSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     # username = serializers.CharField(max_length=10, error_messages={"blank": "ชื่อผู้ใช้เป็นค่าว่าง กรุณากรอกชื่อผู้ใช้งาน"})
     password = serializers.CharField(max_length=10, error_messages={
-                                     "blank": "รหัสผ่านเป็นค่าว่าง กรุณากรอกรหัสผ่าน"})
+        "blank": "รหัสผ่านเป็นค่าว่าง กรุณากรอกรหัสผ่าน"})
 
     class Meta:
         model = User
@@ -102,15 +99,12 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'category', 'name', 'price',
-                  'image', 'is_enabled', 'image_product']
+                  'image', 'is_enabled', 'image_product', 'recommend']
 
 
 class CartSerializer(serializers.HyperlinkedModelSerializer):
-    product = serializers.CharField(max_length=10,
-                                    error_messages={
-                                        "blank": "กรุณากรอกรหัสสินค้า",
-                                        'write_only': True
-                                    })
+    product = serializers.CharField(max_length=10, error_messages={
+                                    "blank": "กรุณากรอกรหัสสินค้า", 'write_only': True})
     quantity = serializers.IntegerField(error_messages={
         "blank": "จำนวนสินค้านี้ต้องมากกว่า 0",
         'write_only': True
@@ -136,29 +130,39 @@ class CartSerializer(serializers.HyperlinkedModelSerializer):
         return quantity
 
 
-# class CartSerializer(serializers.ModelSerializer):
-#     foo = serializers.SerializerMethodField()
+class ProductSerializerIMG(serializers.HyperlinkedModelSerializer):
+    image = VersatileImageFieldSerializer(sizes='person_headshot')
 
-#     class Meta:
-#         model = cart
-#         fields = ['id', 'quantity', 'foo',  'total', 'product']
+    class Meta:
+        model = Product
+        fields = ['id', 'price', 'name', 'image']
 
-#     def get_foo(self, obj):
-#         return "Foo id: %i" % obj.product.price
+
+class CartSerializer2(serializers.HyperlinkedModelSerializer):
+    product = ProductSerializerIMG()
+
+    class Meta:
+        model = cart
+        fields = ['id', 'quantity', 'total', 'product']
 
 
 class InvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = invoice
-        fields = ['url', 'id', 'created_datetime',
+        fields = ['url', 'id', 'user', 'created_datetime',
                   'updated_datetime', 'status', 'total']
 
 
 class Invoice_Item_Serializer(serializers.ModelSerializer):
+    product = serializers.SerializerMethodField()
+
     class Meta:
         model = invoice_item
         fields = ['id', 'product', 'invoice',
                   'created_datetime', 'quantity', 'total']
+
+    def get_product(self, obj):
+        return obj.product.name
 
 
 class Invoice_Detail_Serializer(serializers.ModelSerializer):

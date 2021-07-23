@@ -117,6 +117,7 @@ class ProductViewSet(generics.ListCreateAPIView):
     ]
     search_fields = ['name']
     filterset_fields = ['is_enabled']
+    filterset_fields = ['recommend']
     permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
 
     def __init__(self, **kwargs):
@@ -222,12 +223,16 @@ class CartViewSet(generics.ListCreateAPIView):
     queryset = cart.objects.all()
     serializer_class = CartSerializer
     pagination_class = CustomPagination
-    filter_backends = [
-        DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter
-    ]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['product']
     ordering_fields = ['quantity', 'total']
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+
+    def list(self, request):
+        queryset = cart.objects.filter(user=self.request.user)
+        serializer = CartSerializer2(queryset, many=True)
+        return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -240,7 +245,6 @@ class CartViewSet(generics.ListCreateAPIView):
             item = cart.objects.filter(user=user, product=products.id).first()
             if item:
                 item.quantity += quantities
-                # print(item.quantity)
                 mul = quantities * products.price
                 item.total += float(mul)
                 item.save()
@@ -287,17 +291,6 @@ class CartViewSet(generics.ListCreateAPIView):
                     "error": [serializer.errors]
                 },
                 status=status.HTTP_400_BAD_REQUEST)
-
-    def __init__(self, **kwargs):
-        self.response_format = ResponseInfo().response
-        super(CartViewSet, self).__init__(**kwargs)
-
-    def list(self, request, *args, **kwargs):
-        response_data = super(CartViewSet, self).list(request, *args, **kwargs)
-        self.response_format["data"] = response_data.data
-        if not response_data.data:
-            self.response_format["message"] = "List empty"
-        return Response(self.response_format)
 
 
 class EditCartQuanlity(generics.RetrieveUpdateDestroyAPIView):
@@ -367,14 +360,20 @@ class EditCartQuanlity(generics.RetrieveUpdateDestroyAPIView):
 class InvoiceViewSet(generics.ListCreateAPIView):
     queryset = invoice.objects.all()
     serializer_class = InvoiceSerializer
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [filters.SearchFilter,
+                       filters.OrderingFilter, DjangoFilterBackend]
     search_fields = ['id', 'user']
     ordering_fields = ['id']
+    filterset_fields = ['status']
     permission_classes = [permissions.IsAuthenticated]
 
     def __init__(self, **kwargs):
         self.response_format = ResponseInfo().response
         super(InvoiceViewSet, self).__init__(**kwargs)
+
+    def get_queryset(self):
+        queryset = invoice.objects.filter(user=self.request.user)
+        return queryset
 
     def list(self, request, *args, **kwargs):
         response_data = super(InvoiceViewSet, self).list(
@@ -406,7 +405,8 @@ class InvoiceViewSet(generics.ListCreateAPIView):
 class Invoice_Detail_ViewSet(generics.RetrieveAPIView):
     queryset = invoice.objects.all()
     serializer_class = Invoice_Detail_Serializer
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend
+                       ]
     search_fields = ['id', 'product']
     ordering_fields = ['id']
     permission_classes = [permissions.IsAuthenticated]
@@ -420,6 +420,10 @@ class Invoice_Detail_ViewSet(generics.RetrieveAPIView):
                 "data": serializer.data
             }
             return Response(custom_data)
+
+    def get_queryset(self):
+        queryset = invoice.objects.filter(user=self.request.user)
+        return queryset
 
 
 class CheckOutViewSet(generics.ListCreateAPIView):
