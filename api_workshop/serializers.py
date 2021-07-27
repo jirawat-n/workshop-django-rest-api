@@ -95,11 +95,15 @@ class Product_Image_Serializer(serializers.HyperlinkedModelSerializer):
 class ProductSerializer(serializers.HyperlinkedModelSerializer):
     image_product = Product_Image_Serializer(many=True, read_only=True)
     image = VersatileImageFieldSerializer(sizes='person_headshot')
+    category = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = ['id', 'category', 'name', 'price',
                   'image', 'is_enabled', 'image_product', 'recommend']
+
+    def get_category(self, obj):
+        return obj.category.name
 
 
 class CartSerializer(serializers.HyperlinkedModelSerializer):
