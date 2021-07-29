@@ -1,1 +1,1 @@
-[{"model": "api_workshop.product_image", "pk": 1, "fields": {"product": 1, "image": "images/category/Quartz_3840x2160_xWB0nYB.png"}}, {"model": "api_workshop.product_image", "pk": 2, "fields": {"product": 2, "image": "images/category/Quartz_3840x2160_DlKMbv9.png"}}, {"model": "api_workshop.product_image", "pk": 3, "fields": {"product": 3, "image": "images/category/Quartz_3840x2160_courGp4.png"}}]
+[]

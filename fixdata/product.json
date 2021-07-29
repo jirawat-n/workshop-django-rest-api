@@ -1,1 +1,145 @@
-[{"model": "api_workshop.product", "pk": 1, "fields": {"category": 3, "name": "\u0e1b\u0e25\u0e32\u0e17\u0e2d\u0e14", "price": "85.00", "image": "images/product/Quartz_3840x2160_yYSSA6C.png", "is_enabled": true, "image_ppoi": "0.5x0.5"}}, {"model": "api_workshop.product", "pk": 2, "fields": {"category": 2, "name": "\u0e2b\u0e21\u0e39\u0e17\u0e2d\u0e14", "price": "85.00", "image": "images/product/Quartz_3840x2160_rvoZeeH.png", "is_enabled": true, "image_ppoi": "0.5x0.5"}}, {"model": "api_workshop.product", "pk": 3, "fields": {"category": 3, "name": "\u0e01\u0e38\u0e49\u0e07\u0e17\u0e2d\u0e14", "price": "52.00", "image": "images/product/Quartz_3840x2160_jMM6Ukm.png", "is_enabled": true, "image_ppoi": "0.5x0.5"}}, {"model": "api_workshop.product", "pk": 4, "fields": {"category": 4, "name": "\u0e44\u0e01\u0e48\u0e17\u0e2d\u0e14", "price": "60.00", "image": "images/product/Quartz_3840x2160_JQlW2Dl.png", "is_enabled": true, "image_ppoi": "0.5x0.5"}}]
+[
+    {
+        "model": "api_workshop.product",
+        "pk": 6,
+        "fields": {
+            "category": 5,
+            "name": "Sony a7C",
+            "price": "61990.00",
+            "image": "images/product/1.jpg",
+            "is_enabled": true,
+            "recommend": false,
+            "image_ppoi": "0.5x0.5"
+        }
+    },
+    {
+        "model": "api_workshop.product",
+        "pk": 7,
+        "fields": {
+            "category": 5,
+            "name": "Panasonic Lumix DC-S1R",
+            "price": "109241.00",
+            "image": "images/product/20210419_060157_1549018333000_1455070.jpg",
+            "is_enabled": true,
+            "recommend": true,
+            "image_ppoi": "0.5x0.5"
+        }
+    },
+    {
+        "model": "api_workshop.product",
+        "pk": 8,
+        "fields": {
+            "category": 5,
+            "name": "Sony a7 III",
+            "price": "63990.00",
+            "image": "images/product/1519695934000_1394217_3.jpg",
+            "is_enabled": true,
+            "recommend": true,
+            "image_ppoi": "0.5x0.5"
+        }
+    },
+    {
+        "model": "api_workshop.product",
+        "pk": 9,
+        "fields": {
+            "category": 5,
+            "name": "Sony a6600",
+            "price": "42990.00",
+            "image": "images/product/sony-a6600-body.jpg",
+            "is_enabled": true,
+            "recommend": true,
+            "image_ppoi": "0.5x0.5"
+        }
+    },
+    {
+        "model": "api_workshop.product",
+        "pk": 10,
+        "fields": {
+            "category": 6,
+            "name": "Sony E 50mm f1.8 OSS (sel50f18)",
+            "price": "6900.00",
+            "image": "images/product/sony_e_50mm_f1.8_oss_sel50f18_.jpg",
+            "is_enabled": true,
+            "recommend": false,
+            "image_ppoi": "0.5x0.5"
+        }
+    },
+    {
+        "model": "api_workshop.product",
+        "pk": 11,
+        "fields": {
+            "category": 6,
+            "name": "Sony FE 12-24mm F2.8 GM CSYX [SEL1224GM]",
+            "price": "94990.00",
+            "image": "images/product/sony-fe-12-24mm-f2.8-gm_1.jpg",
+            "is_enabled": true,
+            "recommend": true,
+            "image_ppoi": "0.5x0.5"
+        }
+    },
+    {
+        "model": "api_workshop.product",
+        "pk": 12,
+        "fields": {
+            "category": 6,
+            "name": "Sony FE 24mm f1.4 GM [SEL24F14GM]",
+            "price": "27886.00",
+            "image": "images/product/sony_fe_24mm_f1.4_gm_sel24f14gm_1804.jpg",
+            "is_enabled": true,
+            "recommend": false,
+            "image_ppoi": "0.5x0.5"
+        }
+    },
+    {
+        "model": "api_workshop.product",
+        "pk": 13,
+        "fields": {
+            "category": 6,
+            "name": "Sony FE 50mm f1.8 [sel50f18f]",
+            "price": "6900.00",
+            "image": "images/product/sony_fe_50mm_f1.8_sel50f18f_817.jpg",
+            "is_enabled": true,
+            "recommend": true,
+            "image_ppoi": "0.5x0.5"
+        }
+    },
+    {
+        "model": "api_workshop.product",
+        "pk": 14,
+        "fields": {
+            "category": 6,
+            "name": "Sony FE 200-600mm f5.6-6.3 G OSS",
+            "price": "60900.00",
+            "image": "images/product/sony_fe_200-600mm_f5.6-6.3_g_oss_2534.jpg",
+            "is_enabled": true,
+            "recommend": true,
+            "image_ppoi": "0.5x0.5"
+        }
+    },
+    {
+        "model": "api_workshop.product",
+        "pk": 15,
+        "fields": {
+            "category": 7,
+            "name": "Blackmagic Pocket Cinema Camera 6K Pro",
+            "price": "82585.00",
+            "image": "images/product/20210223_062102_blackmagic-pocket-cinema-camera-6k-pro-1.jpg",
+            "is_enabled": true,
+            "recommend": true,
+            "image_ppoi": "0.5x0.5"
+        }
+    },
+    {
+        "model": "api_workshop.product",
+        "pk": 16,
+        "fields": {
+            "category": 7,
+            "name": "Sony a1",
+            "price": "199990.00",
+            "image": "images/product/20210423_092149_sony-a1.jpg",
+            "is_enabled": true,
+            "recommend": true,
+            "image_ppoi": "0.5x0.5"
+        }
+    }
+]
